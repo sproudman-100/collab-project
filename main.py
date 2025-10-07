@@ -15,6 +15,7 @@ def main():
 
     # Initialize Pygame
     pygame.init()
+    pygame.display.set_caption("PyZelda")
     screen = pygame.display.set_mode((GRID_Y * 50, GRID_X * 50))
     running = True
     clock = pygame.time.Clock()
@@ -48,10 +49,10 @@ def main():
 
         # Draw background
         screen.fill("green")
-        for x in range(GRID_Y + 1):
-            pygame.draw.line(screen, (0, 0, 0), (x * grid_width, 0), (x * grid_width, screen.get_height()), 1)
-        for y in range(GRID_X + 1):
-            pygame.draw.line(screen, (0, 0, 0), (0, y * grid_height), (screen.get_width(), y * grid_height), 1)
+        # for x in range(GRID_Y + 1):
+        #     pygame.draw.line(screen, (0, 0, 0), (x * grid_width, 0), (x * grid_width, screen.get_height()), 1)
+        # for y in range(GRID_X + 1):
+        #     pygame.draw.line(screen, (0, 0, 0), (0, y * grid_height), (screen.get_width(), y * grid_height), 1)
 
         # Handle user inputs
         for event in pygame.event.get():
