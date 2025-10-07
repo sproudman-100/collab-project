@@ -31,6 +31,27 @@ class Player:
         # For key hold movement
         self.held_direction = None
 
+        # For collision checking
+        self.collidable_objects = []
+
+    def set_collidable_objects(self, objects):
+        """Set the list of objects to check collision against"""
+        self.collidable_objects = objects
+
+    def can_move_to(self, x, y):
+        """Check if the player can move to the given grid position"""
+        # Check if position is within bounds
+        if x < 0 or x >= self.grid_y or y < 0 or y >= self.grid_x:
+            return False
+
+        # Check collision with all collidable objects
+        for obj in self.collidable_objects:
+            if hasattr(obj, 'get_occupied_cells'):
+                occupied_cells = obj.get_occupied_cells()
+                if (x, y) in occupied_cells:
+                    return False
+        return True
+
     def move(self, dx, dy):
         # Set held direction for continuous movement
         if dx == 1:
@@ -68,6 +89,11 @@ class Player:
             return
         new_x = max(0, min(self.grid_y - 1, self.x + dx))
         new_y = max(0, min(self.grid_x - 1, self.y + dy))
+
+        # Check collision using internal collision checking
+        if not self.can_move_to(new_x, new_y):
+            return
+
         if (new_x, new_y) != (self.x, self.y):
             self.animating = True
             self.anim_start_time = pygame.time.get_ticks() / 1000.0

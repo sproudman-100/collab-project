@@ -1,7 +1,11 @@
 
 import pygame
 
+from tree import Tree
 from player import Player
+from enemy import Enemy
+
+import random
 
 # Define grid size
 GRID_X = 18
@@ -12,9 +16,8 @@ def main():
     # Initialize Pygame
     pygame.init()
     screen = pygame.display.set_mode((GRID_Y * 50, GRID_X * 50))
-    clock = pygame.time.Clock()
     running = True
-    dt = 0
+    clock = pygame.time.Clock()
 
     # Set the dimensions of each grid cell
     grid_width = screen.get_width() // GRID_Y
@@ -22,10 +25,27 @@ def main():
 
     # Create player instance
     player = Player(GRID_X, GRID_Y, grid_width, grid_height)
+    
+    # Create enemy instance
+    enemy = Enemy(GRID_X, GRID_Y, grid_width, grid_height)
+
+    # Create multiple tree instances
+    trees = []
+    tree_positions = [(random.randint(0, GRID_Y-1), random.randint(0, GRID_X-1)) for _ in range(30)]
+
+    for x, y in tree_positions:
+        # Make sure tree fits within grid bounds
+        if x + 2 <= GRID_Y and y + 3 <= GRID_X:
+            trees.append(Tree(x, y, grid_width, grid_height))
+
+    # Pass collidable objects to player and enemy
+    player.set_collidable_objects(trees)
+    enemy.set_collidable_objects(trees)
 
     # Main game loop
     while running:
-        
+        dt = clock.tick(60) / 1000.0  # Delta time in seconds
+
         # Draw background
         screen.fill("green")
         for x in range(GRID_Y + 1):
@@ -58,11 +78,19 @@ def main():
 
         # Update and draw player
         player.update()
-        player.draw(screen)
+        
+        # Update enemy
+        enemy.update(dt)
+        
+        # Draw all entities sorted by y position (top to bottom)
+        all_entities = [player] + [enemy] + trees
+        sorted_entities = sorted(all_entities, key=lambda entity: entity.y)
+        
+        for entity in sorted_entities:
+            entity.draw(screen)
 
         # Update display
         pygame.display.flip()
-        #dt = clock.tick(60) / 1000
 
     pygame.quit()
 
